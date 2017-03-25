@@ -78,6 +78,16 @@ class UtSerialCommunication(unittest.TestCase):
         for test_way_point in test_route:
             response = self.helper_SendOneCmdPacket(test_way_point)
             self.helper_checkResponse(response)
+            sleep(7)
+
+    def test_getActiveWayPoint(self):
+         logging.info("Sending get active waypoint command")
+         cmd_packet = comm_packet_pb2.CommandPacket()
+         control_signal_cmd = cmd_packet.RoverCmds.add()
+         control_signal_cmd.Id = WP_GET_ACTIVE
+         response = self.helper_SendOneCmdPacket(cmd_packet)
+         self.helper_checkResponse(response)
+         logging.info("The active waypoint is : " + response.ActiveWayPoint)
 
     def test_commandControlSignal(self):
         logging.info("Sending control signal command")
@@ -88,10 +98,10 @@ class UtSerialCommunication(unittest.TestCase):
         response = self.helper_SendOneCmdPacket(cmd_packet)
         self.helper_checkResponse(response)
 
-    def test_repeatedControlCommands20Hz(self):
-        logging.info("Sending repeated control signal commands 20 Hz")
+    def test_repeatedControlCommands5Hz(self):
+        logging.info("Sending repeated control signal commands 5 Hz")
         # Set frequency to 20 Hz
-        self.testArticle.CommFrequency = 0.05
+        self.testArticle.CommFrequency = 0.2
         # No need to set comm frequency, default is 20 Hz.
         self.helper_SendSineWaveControlSignal(stepSize=0.01)
         # Expect more than 95% reliablility ... 100 packets sent, less than 5 failed

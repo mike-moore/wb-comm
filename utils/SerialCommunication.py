@@ -5,7 +5,7 @@ import logging
 from google.protobuf.message import EncodeError
 
 class SerialCommunication(object):
-    def __init__(self, portName, frequency=0.05):
+    def __init__(self, portName, frequency=0.1):
         self.serialPort = serial.Serial(
             port=portName, baudrate=57600, rtscts=True, dsrdtr=True)
         self.resetPacketCounters()

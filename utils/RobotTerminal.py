@@ -11,14 +11,6 @@ class RobotTerminal(Cmd):
     def __init__(self):
         Cmd.__init__(self)
         self.portName = "/dev/ttyUSB0"
-        self.serialComm = None
-
-    def do_set_port(self, args):
-        """Set the port name for the Arduino. eg set_port /dev/ttyUSB0"""
-        self.portName = args
-
-    def do_connect(self, args):
-        """Connects to the robot. Required before sending commands."""
         self.serialComm = SerialCommunication(self.portName)
 
     def do_exit(self, args):
@@ -32,10 +24,9 @@ class RobotTerminal(Cmd):
         control_signal_cmd.Id = WP_GET_ACTIVE
         response = self.serialComm.commandArduino(cmd_packet)
         if response:
-            if response.RoverStatus[0].Value:
-                print " Active WayPoint is named : " + str(response.RoverStatus[0].Value)
-            else:
-                print " No Active WayPoint ... Rover is Idling."
+            print "The active waypoint is : " + response.ActiveWayPoint
+        else:
+            print " Command error"
         return
 
     def do_send_waypoint(self, args):
@@ -62,7 +53,10 @@ class RobotTerminal(Cmd):
             control_signal_cmd.Value = sample
             response = self.serialComm.commandArduino(cmd_packet)
             if response:
-                print " Response signal : " + str(response.RoverStatus[1].Value)
+                try:
+                    print " Response signal : " + str(response.RoverStatus[0].Value)
+                except IndexError:
+                    print " "
 
     def send_waypoint(self):
         try:
