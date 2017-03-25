@@ -49,7 +49,8 @@ void CommandAndDataHandler::ProcessRoverCmd(IdValuePairFloat & rover_cmd) {
     if (rover_cmd.Id == CTRL_ACTIVE){
         SendResponseSignal = true;
         State.ControlSignal = rover_cmd.Value;
-    }else if(rover_cmd.Id == WP_GET_ACTIVE){
+    }
+    if(rover_cmd.Id == WP_GET_ACTIVE){
         strncpy(Telemetry.ActiveWayPoint, State.ActiveWayPoint.Name, 15);
         Telemetry.has_ActiveWayPoint = true;
     }
