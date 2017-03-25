@@ -11,7 +11,7 @@ RobotState robotState;
 ProtobuffSerial serialComm;
 // - Initialize an instance of the command and data handler
 CommandAndDataHandler cmdAndDataHandler(serialComm.Commands, serialComm.Telemetry, robotState);
-// - Initiliaze an instance of the robot guidance
+// - Initiliaze an instance of the robot navigation
 Navigation navigation(robotState);
 // - Initiliaze an instance of the robot guidance
 Guidance guidance(robotState);

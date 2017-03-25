@@ -16,7 +16,6 @@
 #include "comm_packet.pb.h"
 #include "QueueList.h"
 
-
 ///////////////////////////////////////////////////////////////
 /// @class RobotState
 /// @ingroup WheelBot

@@ -49,6 +49,7 @@ void CommandAndDataHandler::ProcessRoverCmd(IdValuePairFloat & rover_cmd) {
         State.ControlSignal = rover_cmd.Value;
     }
     if(rover_cmd.Id == WP_GET_ACTIVE){
+        Serial.println("WP GET ACTIVE");
         strncpy(Telemetry.ActiveWayPoint, State.ActiveWayPoint.Name, 15);
         Telemetry.has_ActiveWayPoint = true;
     }
@@ -57,10 +58,12 @@ void CommandAndDataHandler::ProcessRoverCmd(IdValuePairFloat & rover_cmd) {
 void CommandAndDataHandler::ProcessWayPointCmd(WayPoint & way_point_cmd) {
     /// - Add the way point to the WayPointQueue
     if (State.WayPointQueue.count() < 15){
+        Serial.println("adding waypoint to the queue.");
         State.WayPointQueue.push(way_point_cmd);
         /// - Pack the waypoint acknowledged command
         PackInt(WP_CMD_ACCEPT);
     }else{
+        Serial.println("reject waypoint");
         /// - Pack the waypoint rejected command
         PackInt(WP_CMD_REJECT);       
     }
