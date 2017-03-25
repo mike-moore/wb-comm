@@ -14,8 +14,8 @@
 #define ROBOTSTATE_H
 
 #include "comm_packet.pb.h"
+#include "QueueList.h"
 
-#define MaxRouteSize 15
 
 ///////////////////////////////////////////////////////////////
 /// @class RobotState
@@ -32,12 +32,17 @@ class RobotState {
   float SensedDistance;
 
   /// - Robot guidance
-  WayPoint ActiveRoute[MaxRouteSize];
-  uint_least8_t NumWayPoints = 0;
-  inline void addWayPoint(const WayPoint& way_point);
+  WayPoint ActiveWayPoint;
+  QueueList <WayPoint> WayPointQueue;
+  float HeadingError;
+  float DistanceError;
 
   /// - Robot control
   float ControlSignal;
+  bool TargetReached;
+  /// - TEMP variable. Will go away once control is implemented
+  ///   fully. DELETE
+  uint32_t ControlWaitCycles;
 
   /// - Telemetry
   float ResponseSignal;
@@ -45,12 +50,6 @@ class RobotState {
 
  protected:
  	/// - None yet
-};
-  
-inline void RobotState::addWayPoint(const WayPoint& way_point){
-  	if (NumWayPoints >= MaxRouteSize){ return ; }
-    ActiveRoute[NumWayPoints] = way_point;
-    NumWayPoints++;
 };
 
 #endif

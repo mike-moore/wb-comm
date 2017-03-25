@@ -17,6 +17,7 @@
 #define CTRL_ACTIVE   0xA501
 #define WP_CMD_ACCEPT 0xA505
 #define WP_CMD_REJECT 0xA506
+#define WP_GET_ACTIVE 0xA507
 
 /// - Response Ids
 #define RESPONSE_SIGNAL 0xB501

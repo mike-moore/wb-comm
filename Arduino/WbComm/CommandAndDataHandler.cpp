@@ -10,10 +10,8 @@ CommandAndDataHandler::CommandAndDataHandler(CommandPacket& commands, TelemetryP
 CommandAndDataHandler::~CommandAndDataHandler() {}
 
 void CommandAndDataHandler::ProcessCmds() {
-    /// - Clear the count of Rover Status variables to be sent.
-    ///   This is determined based on which RoverCmds are
-    ///   received. It is incremented in LoadRoverStatus function.
-    Telemetry.RoverStatus_count = 0;
+    /// - Clear sent optional telemetry items from previous pass.
+    ClearTelemetry();
     /// - Iterate over and process any rover commands that were sent
     for (uint_least8_t indx = 0; indx < Commands.RoverCmds_count; indx++){
         //Serial.println("Processing New Rover Command Received ... ");
@@ -27,9 +25,15 @@ void CommandAndDataHandler::ProcessCmds() {
         return;
     }else{
         ProcessWayPointCmd(Commands.WayPointCmd);
-        /// - Pack the waypoint acknowledged command
-        PackInt(WP_CMD_ACCEPT);
     }
+}
+
+void CommandAndDataHandler::ClearTelemetry() {
+    /// - Clear the count of Rover Status variables to be sent.
+    ///   This is determined based on which RoverCmds are
+    ///   received. It is incremented in LoadRoverStatus function.
+    Telemetry.RoverStatus_count = 0;
+    Telemetry.has_ActiveWayPoint = false;
 }
 
 void CommandAndDataHandler::LoadTelemetry() {
@@ -42,28 +46,25 @@ void CommandAndDataHandler::LoadTelemetry() {
 }
 
 void CommandAndDataHandler::ProcessRoverCmd(IdValuePairFloat & rover_cmd) {
-    //Serial.print("Rover Command Received : ");
-    //Serial.println(rover_cmd.Id);
-    //Serial.print("Rover Command Value : ");
-    //Serial.println(rover_cmd.Value);
     if (rover_cmd.Id == CTRL_ACTIVE){
         SendResponseSignal = true;
         State.ControlSignal = rover_cmd.Value;
+    }else if(rover_cmd.Id == WP_GET_ACTIVE){
+        strncpy(Telemetry.ActiveWayPoint, State.ActiveWayPoint.Name, 15);
+        Telemetry.has_ActiveWayPoint = true;
     }
 }
 
 void CommandAndDataHandler::ProcessWayPointCmd(WayPoint & way_point_cmd) {
-    /// - Add the way point to robot's state registry. This will make it
-    ///   available for the guidance module.
-    State.addWayPoint(way_point_cmd);
-    /// - Debug message.
-    //Serial.print("Adding WayPoint ");
-    //Serial.print(way_point_cmd.Name);
-    //Serial.println(" to route.");
-    //Serial.print("WayPoint heading : ");
-    //Serial.println(way_point_cmd.Heading);
-    //Serial.print("WayPoint distance : ");
-    //Serial.println(way_point_cmd.Distance);
+    /// - Add the way point to the WayPointQueue
+    if (State.WayPointQueue.count() < 15){
+        State.WayPointQueue.push(way_point_cmd);
+        /// - Pack the waypoint acknowledged command
+        PackInt(WP_CMD_ACCEPT);
+    }else{
+        /// - Pack the waypoint rejected command
+        PackInt(WP_CMD_REJECT);       
+    }
 }
 
 void CommandAndDataHandler::PackInt(uint32_t id) {

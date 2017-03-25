@@ -11,6 +11,7 @@ class RobotTerminal(Cmd):
     def __init__(self):
         Cmd.__init__(self)
         self.portName = "/dev/ttyUSB0"
+        self.serialComm = None
 
     def do_set_port(self, args):
         """Set the port name for the Arduino. eg set_port /dev/ttyUSB0"""
@@ -18,11 +19,24 @@ class RobotTerminal(Cmd):
 
     def do_connect(self, args):
         """Connects to the robot. Required before sending commands."""
-        self.testArticle = SerialCommunication(self.portName)
+        self.serialComm = SerialCommunication(self.portName)
 
     def do_exit(self, args):
         """Exits the terminal"""
         raise SystemExit
+
+    def do_get_active_waypoint(self, args):
+        """ Gets the name of the active way point"""
+        cmd_packet = comm_packet_pb2.CommandPacket()
+        control_signal_cmd = cmd_packet.RoverCmds.add()
+        control_signal_cmd.Id = WP_GET_ACTIVE
+        response = self.serialComm.commandArduino(cmd_packet)
+        if response:
+            if response.RoverStatus[0].Value:
+                print " Active WayPoint is named : " + str(response.RoverStatus[0].Value)
+            else:
+                print " No Active WayPoint ... Rover is Idling."
+        return
 
     def do_send_waypoint(self, args):
         """Prompts the user to enter a way-point and then sends it to the Arduino"""
@@ -46,7 +60,7 @@ class RobotTerminal(Cmd):
             control_signal_cmd = cmd_packet.RoverCmds.add()
             control_signal_cmd.Id = CTRL_ACTIVE
             control_signal_cmd.Value = sample
-            response = self.testArticle.commandArduino(cmd_packet)
+            response = self.serialComm.commandArduino(cmd_packet)
             if response:
                 print " Response signal : " + str(response.RoverStatus[1].Value)
 
@@ -65,7 +79,7 @@ class RobotTerminal(Cmd):
         way_point_cmd.WayPointCmd.Name = way_point_name
         way_point_cmd.WayPointCmd.Heading = way_point_heading
         way_point_cmd.WayPointCmd.Distance = way_point_distance
-        response = self.testArticle.commandArduino(way_point_cmd)
+        response = self.serialComm.commandArduino(way_point_cmd)
         if self.isValidWayPoint(response):
             print "WayPoint " + way_point_name + " successfully sent and processed."
         else:
