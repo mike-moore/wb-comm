@@ -20,8 +20,6 @@ void CommandAndDataHandler::ProcessCmds() {
     /// - Process the way point command if it was sent and valid
     ///   Invalid or no way-point sent defaults to 0 length string for its name
     if (strlen(Commands.WayPointCmd.Name)==0){
-        /// - Pack the waypoint rejected command
-        PackInt(WP_CMD_REJECT);
         return;
     }else{
         ProcessWayPointCmd(Commands.WayPointCmd);

@@ -29,6 +29,7 @@ class Control {
 
  private:
     RobotState& State;
+    uint32_t ControlWaitCycles;
 };
   
 

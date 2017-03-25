@@ -20,14 +20,10 @@ Control control(robotState);
 
 const long cycleTimeMillis = 20;
 unsigned long previousMillis = 0;
-float desiredHeading = 0.0;
-float desiredDistance = 0.0;
 
 void setup(){
   // - Serial comm init
   serialComm.InitHw();
-  serialComm.Telemetry.MeasuredHeading = 0.0;
-  serialComm.Telemetry.MeasuredDistance = 0.0;
 }
 
 void loop(){

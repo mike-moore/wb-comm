@@ -24,7 +24,7 @@
 ///////////////////////////////////////////////////////////////
 class RobotState { 
  public:
-  RobotState(){};
+  RobotState();
   ~RobotState(){};
 
   /// - Sensor readings
@@ -40,9 +40,6 @@ class RobotState {
   /// - Robot control
   float ControlSignal;
   bool TargetReached;
-  /// - TEMP variable. Will go away once control is implemented
-  ///   fully. DELETE
-  uint32_t ControlWaitCycles;
 
   /// - Telemetry
   float ResponseSignal;
