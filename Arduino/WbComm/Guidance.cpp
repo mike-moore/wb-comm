@@ -10,22 +10,24 @@ void Guidance::Execute() {
             if (State.WayPointQueue.isEmpty()){
                 return;
             }else{
-                /// - Check the queue for a valid way-point to be processed.
+                /// - Pop the waypoint off the queue and set to active way point.
                 WayPoint way_point;
-                way_point = State.WayPointQueue.peek();
+                way_point = State.WayPointQueue.pop();
                 /// - Set the active way point and move to trackind mode.
                 strncpy(State.ActiveWayPoint.Name, way_point.Name, 15);
+                State.ActiveWayPoint.Heading = way_point.Heading; 
+                State.ActiveWayPoint.Distance = way_point.Distance; 
+                Serial.print("Tracking to new waypoint : ");
+                Serial.println(State.ActiveWayPoint.Name);
+                State.TargetReached = false;
                 Mode = TRACKING;
             }
         break;
 
         case TRACKING:
-            /// - Pop the waypoint off the queue and start tracking it.
-            WayPoint way_point;
-            way_point = State.WayPointQueue.pop();
             /// - Compute the errors for control
-            State.HeadingError = way_point.Heading - State.SensedHeading;
-            State.DistanceError = way_point.Distance - State.SensedDistance;
+            State.HeadingError = State.ActiveWayPoint.Heading - State.SensedHeading;
+            State.DistanceError = State.ActiveWayPoint.Distance - State.SensedDistance;
             if (State.TargetReached){
                 Mode = IDLE;
             }

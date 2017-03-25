@@ -22,7 +22,7 @@
 ///////////////////////////////////////////////////////////////
 class Control { 
  public:
-    Control(RobotState& state) : State(state) {};
+    Control(RobotState& state) : State(state), ControlWaitCycles(0) {};
     ~Control(){};
 
     void Execute();
