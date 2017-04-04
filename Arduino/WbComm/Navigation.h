@@ -25,6 +25,7 @@ class Navigation {
     Navigation(RobotState& state) : State(state) {};
     ~Navigation(){};
 
+    void InitSensors();
     void Execute();
 
  private:
